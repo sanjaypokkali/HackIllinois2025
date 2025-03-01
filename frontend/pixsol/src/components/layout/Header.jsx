@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import WalletConnect from '../auth/WalletConnect';
+// import WalletConnect from '../auth/WalletConnect';
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 
 function Header() {
   return (
@@ -16,7 +17,8 @@ function Header() {
         </ul>
       </nav>
       <div className="wallet-section">
-        <WalletConnect />
+      <WalletMultiButton />
+
       </div>
     </header>
   );

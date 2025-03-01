@@ -3,57 +3,13 @@ import { Connection, PublicKey, clusterApiUrl, Transaction, SystemProgram } from
 // Configure Solana connection (use devnet for development)
 const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
 
-// Mock wallet for development (when real wallet isn't connected)
-const MOCK_WALLET = {
-  publicKey: new PublicKey('8xj7dE4kLmUCz1nNWKgpvs9QT2KgX5vUQh7xLcYDVvdm'),
-  signTransaction: async (transaction) => transaction,
-  signAllTransactions: async (transactions) => transactions,
-};
-
-// Connect to wallet (in production this would use Phantom or Solflare)
-export const connectToWallet = async () => {
-  try {
-    // For development, we'll just return a mock wallet
-    // In production, you would use:
-    const provider = window.solana || window.phantom?.solana;
-    await provider.connect();
-    return provider;
-    
-    // console.log('Connected to mock wallet for development');
-    // await new Promise(resolve => setTimeout(resolve, 500)); // Simulate connection delay
-    // return MOCK_WALLET;
-  } catch (error) {
-    console.error('Error connecting to wallet:', error);
-    throw new Error('Failed to connect wallet');
-  }
-};
-
-// Disconnect wallet
-export const disconnectWallet = async () => {
-  try {
-    // For development, we'll just log a message
-    // In production, you would use:
-    // const provider = window.solana || window.phantom?.solana;
-    // await provider.disconnect();
-    
-    console.log('Disconnected from mock wallet');
-    return true;
-  } catch (error) {
-    console.error('Error disconnecting wallet:', error);
-    return false;
-  }
-};
-
 // Create a transaction to place a pixel
-export const createPlacePixelTransaction = async (wallet, eventId, x, y, color) => {
+export const createPlacePixelTransaction = async (publicKey, eventId, x, y, color) => {
   try {
-    // In a real implementation, this would create a transaction to call your program
-    // For now, we'll just create a dummy transaction
-    
     // Create a new transaction
     const transaction = new Transaction().add(
       SystemProgram.transfer({
-        fromPubkey: wallet.publicKey,
+        fromPubkey: publicKey,
         toPubkey: new PublicKey('11111111111111111111111111111111'),
         lamports: 1000, // 0.000001 SOL
       })
@@ -78,32 +34,23 @@ export const createPlacePixelTransaction = async (wallet, eventId, x, y, color) 
 };
 
 // Purchase canvas space
-export const purchaseCanvasSpace = async (wallet, eventId) => {
+export const purchaseCanvasSpace = async (publicKey, sendTransaction, eventId) => {
   try {
-    // In a real implementation, this would create a transaction to purchase space
-    // For now, we'll just create a dummy transaction
-    
     // Create a new transaction
     const transaction = new Transaction().add(
       SystemProgram.transfer({
-        fromPubkey: wallet.publicKey,
+        fromPubkey: publicKey,
         toPubkey: new PublicKey('11111111111111111111111111111111'),
         lamports: 100000000, // 0.1 SOL
       })
     );
     
-    // Sign and send transaction
-    // In production, this would use the actual wallet
-    // const signedTransaction = await wallet.signTransaction(transaction);
-    // const signature = await connection.sendRawTransaction(signedTransaction.serialize());
-    // await connection.confirmTransaction(signature);
-    
-    // Simulate transaction
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // Sign and send transaction using the provided sendTransaction function
+    const signature = await sendTransaction(transaction, connection);
     
     return {
       success: true,
-      txSignature: `dummy_purchase_tx_${Math.random().toString(36).substring(2, 15)}`,
+      txSignature: signature,
     };
   } catch (error) {
     console.error('Error purchasing canvas space:', error);
@@ -138,21 +85,25 @@ export const getNFTDetails = async (nftId) => {
 };
 
 // Mint NFT from canvas
-export const mintCanvasNFT = async (wallet, eventId) => {
+export const mintCanvasNFT = async (publicKey, sendTransaction, eventId) => {
   try {
-    // In a real implementation, this would create a transaction to mint an NFT
-    // For now, we'll just simulate the process
+    // Create a transaction to mint an NFT
+    const transaction = new Transaction().add(
+      SystemProgram.transfer({
+        fromPubkey: publicKey,
+        toPubkey: new PublicKey('11111111111111111111111111111111'),
+        lamports: 50000000, // 0.05 SOL as an example fee
+      })
+    );
     
-    console.log(`Minting NFT for canvas event ${eventId}`);
-    
-    // Simulate minting process
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    // Sign and send the transaction
+    const signature = await sendTransaction(transaction, connection);
     
     return {
       success: true,
       nftId: `nft-${Math.floor(Math.random() * 1000)}`,
       mintAddress: new PublicKey('8xj7dE4kLmUCz1nNWKgpvs9QT2KgX5vUQh7xLcYDVvdm').toString(),
-      txSignature: `dummy_mint_tx_${Math.random().toString(36).substring(2, 15)}`,
+      txSignature: signature,
     };
   } catch (error) {
     console.error('Error minting NFT:', error);
@@ -161,8 +112,10 @@ export const mintCanvasNFT = async (wallet, eventId) => {
 };
 
 // Get user's NFTs
-export const getUserNFTs = async (walletAddress) => {
+export const getUserNFTs = async (publicKey) => {
   try {
+    if (!publicKey) return [];
+    
     // In a real implementation, this would fetch NFTs owned by the user
     // For now, we'll return dummy data
     

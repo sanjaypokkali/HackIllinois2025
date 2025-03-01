@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import Canvas from '../components/canvas/Canvas';
-import CanvasLoader from '../components/canvas/CanvasLoader';
-import WalletConnect from '../components/auth/WalletConnect';
-import UniversityVerification from '../components/auth/UniversityVerification';
-import Layout from '../components/layout/Layout';
+import Canvas from '../canvas/Canvas';
+import CanvasLoader from '../canvas/CanvasLoader';
+import WalletConnect from '../auth/WalletConnect';
+import UniversityVerification from '../auth/UniversityVerification';
+import Layout from '../layout/Layout';
 
 function CanvasPage({ eventId }) {
   const [isLoading, setIsLoading] = useState(true);

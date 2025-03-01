@@ -15,13 +15,13 @@ export const connectToWallet = async () => {
   try {
     // For development, we'll just return a mock wallet
     // In production, you would use:
-    // const provider = window.solana || window.phantom?.solana;
-    // await provider.connect();
-    // return provider;
+    const provider = window.solana || window.phantom?.solana;
+    await provider.connect();
+    return provider;
     
-    console.log('Connected to mock wallet for development');
-    await new Promise(resolve => setTimeout(resolve, 500)); // Simulate connection delay
-    return MOCK_WALLET;
+    // console.log('Connected to mock wallet for development');
+    // await new Promise(resolve => setTimeout(resolve, 500)); // Simulate connection delay
+    // return MOCK_WALLET;
   } catch (error) {
     console.error('Error connecting to wallet:', error);
     throw new Error('Failed to connect wallet');

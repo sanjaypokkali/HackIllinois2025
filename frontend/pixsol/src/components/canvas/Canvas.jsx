@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Pixel from './Pixel';
-import useCanvas from '../../hooks/useCanvas';
+import useCanvas from '../hooks/useCanvas';
 import { getCanvasState } from '../services/canvasService';
-
+import '../../styles/Canvas.css';
 function Canvas({ eventId }) {
   const { canvasState, placePixel } = useCanvas(eventId);
   const [selectedColor, setSelectedColor] = useState('#000000');

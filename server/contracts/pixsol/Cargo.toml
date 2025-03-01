@@ -1,0 +1,18 @@
+[package]
+name = "pixsol"
+version = "0.1.0"
+description = "pixsol"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+
+[dependencies]
+anchor-lang = { version = "0.27.0", features = ["init-if-needed"] }  # Use the appropriate version for your project

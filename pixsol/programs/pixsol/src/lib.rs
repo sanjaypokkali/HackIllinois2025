@@ -69,8 +69,9 @@ pub struct CreatePixel<'info> {
     pub pixel: Account<'info, Pixel>,
     #[account(mut)]
     pub user: Signer<'info>,
+    /// CHECK: This is just a public key reference used to record who modified the pixel
     #[account(mut)]
-    pub modifier: Signer<'info>,
+    pub modifier: UncheckedAccount<'info>,
     pub system_program: Program<'info, System>
 }
 
@@ -78,8 +79,9 @@ pub struct CreatePixel<'info> {
 pub struct UpdatePixel<'info> {
     #[account(mut)]
     pub pixel: Account<'info, Pixel>, // Ensure the pixel is mutable
+    /// CHECK: This is just a public key reference used to record who modified the pixel
     #[account(mut)]
-    pub modifier: Signer<'info>, // Add modifier account to update the pixel
+    pub modifier: UncheckedAccount<'info>, // Add modifier account to update the pixel
     #[account(mut)]
     pub user: Signer<'info>, // User must be mutable as well
 }

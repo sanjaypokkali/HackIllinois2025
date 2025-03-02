@@ -97,6 +97,7 @@ app.post('/create-canvas', async (req, res) => {
   
 
 app.post('/set-pixel', async (req, res) => {
+  console.log
   try {
     const { canvasId, x, y, color, modifierId } = req.body;
     const provider = new AnchorProvider(connection, new Wallet(wallet), {});
@@ -118,7 +119,7 @@ app.post('/set-pixel', async (req, res) => {
       const pixelAccount = Keypair.generate();
   
       console.log("gonna start creating!", pixelAccount.publicKey.toString());
-
+      console.log(wallet.publicKey.toString())
       var signature = await program.methods.createPixel(x, y, color).accounts({
         canvas: canvasId, // Public key passed by the client
         user: wallet.publicKey,
@@ -143,8 +144,6 @@ app.post('/set-pixel', async (req, res) => {
     console.error('Error creating pixel:', error);
     res.status(500).json({ error: 'Failed to create pixel' });
   }
-  
-  // Store pixel account address in Redis
 });
 
 // app.post('/update-pixel', async (req, res) => {

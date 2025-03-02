@@ -96,7 +96,7 @@ app.post('/create-canvas', async (req, res) => {
 });
   
 
-app.post('/create-pixel', async (req, res) => {
+app.post('/set-pixel', async (req, res) => {
   try {
     const { canvasId, x, y, color, modifierId } = req.body;
     const provider = new AnchorProvider(connection, new Wallet(wallet), {});

@@ -45,6 +45,62 @@
           "type": "u32"
         }
       ]
+    },
+    {
+      "name": "create_pixel",
+      "discriminator": [
+        79,
+        93,
+        54,
+        140,
+        128,
+        202,
+        193,
+        216
+      ],
+      "accounts": [
+        {
+          "name": "canvas"
+        },
+        {
+          "name": "pixel",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "modifier",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "x",
+          "type": "u32"
+        },
+        {
+          "name": "y",
+          "type": "u32"
+        },
+        {
+          "name": "color",
+          "type": {
+            "array": [
+              "u8",
+              3
+            ]
+          }
+        }
+      ]
     }
   ],
   "accounts": [
@@ -59,6 +115,19 @@
         179,
         55,
         66
+      ]
+    },
+    {
+      "name": "Pixel",
+      "discriminator": [
+        54,
+        195,
+        214,
+        222,
+        39,
+        180,
+        218,
+        84
       ]
     }
   ],
@@ -83,6 +152,47 @@
           {
             "name": "creator",
             "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Pixel",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "x",
+            "type": "u32"
+          },
+          {
+            "name": "y",
+            "type": "u32"
+          },
+          {
+            "name": "color",
+            "type": {
+              "array": [
+                "u8",
+                3
+              ]
+            }
+          },
+          {
+            "name": "canvas",
+            "type": "pubkey"
+          },
+          {
+            "name": "modifier",
+            "type": "pubkey"
+          },
+          {
+            "name": "payer",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
           }
         ]
       }

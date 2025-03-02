@@ -24,13 +24,13 @@ app.post('/create-canvas', async (req, res) => {
     setProvider(provider);
     const program = new Program(idl as Idl, provider);
 
-    await program.methods.createCanvas(width, height).accounts({
+    var signture = await program.methods.createCanvas(width, height).accounts({
       canvas: canvasAccount.publicKey,
       user: wallet.publicKey
     }).signers([wallet, canvasAccount]).rpc();
  
     console.log('Canvas created:', canvasAccount.publicKey.toString());
-
+  
     res.json({
       message: 'Canvas created successfully',
       canvasId: canvasAccount.publicKey.toString(),
@@ -41,6 +41,36 @@ app.post('/create-canvas', async (req, res) => {
   }
 });
   
+
+app.post('/create-pixel', async (req, res) => {
+  try {
+    const { canvasId, x, y, color, modifierId } = req.body;
+    const pixelAccount = Keypair.generate();
+    const provider = new AnchorProvider(connection, new Wallet(wallet), {});
+    setProvider(provider);
+    const program = new Program(idl as Idl, provider);
+    console.log("gonna start creating!", pixelAccount.publicKey.toString());
+
+    var signature = await program.methods.createPixel(x, y, color).accounts({
+      canvas: canvasId, // Public key passed by the client
+      user: wallet.publicKey,
+      pixel: pixelAccount.publicKey,
+      modifier: modifierId // Public key passed by the client
+    }).signers([wallet, pixelAccount]).rpc();
+
+    console.log('Pixel created:', pixelAccount.publicKey.toString());
+  
+    res.json({
+      message: 'Pixel created successfully',
+      canvasId: pixelAccount.publicKey.toString(),
+    });
+
+  } catch (error) {
+    console.error('Error creating pixel:', error);
+    res.status(500).json({ error: 'Failed to create pixel' });
+  }
+});
+
 
 const PORT = 3001;
 app.listen(PORT, () => {

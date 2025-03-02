@@ -71,6 +71,30 @@ app.post('/create-pixel', async (req, res) => {
   }
 });
 
+app.post('/update-pixel', async (req, res) => {
+  try {
+    const { color, pixelAccountAddress, modifierId } = req.body; // Updated to use pixelAccountAddress
+    const provider = new AnchorProvider(connection, new Wallet(wallet), {});
+    setProvider(provider);
+    const program = new Program(idl as Idl, provider);
+
+    var signature = await program.methods.updatePixel(color).accounts({
+      pixel: pixelAccountAddress, // Use the pixel account address from the client
+      user: wallet.publicKey,
+      modifier: modifierId
+    }).rpc();
+
+    res.json({
+      message: 'Pixel updated successfully',
+    });
+
+  } catch (error) {
+    console.error('Error updating pixel:', error);
+    res.status(500).json({ error: 'Failed to update pixel' });
+  }
+});
+
+
 
 const PORT = 3001;
 app.listen(PORT, () => {

@@ -101,6 +101,46 @@
           }
         }
       ]
+    },
+    {
+      "name": "update_pixel",
+      "discriminator": [
+        206,
+        142,
+        40,
+        102,
+        170,
+        124,
+        205,
+        251
+      ],
+      "accounts": [
+        {
+          "name": "pixel",
+          "writable": true
+        },
+        {
+          "name": "modifier",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "color",
+          "type": {
+            "array": [
+              "u8",
+              3
+            ]
+          }
+        }
+      ]
     }
   ],
   "accounts": [

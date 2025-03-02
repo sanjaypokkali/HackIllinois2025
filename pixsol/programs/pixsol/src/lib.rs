@@ -44,15 +44,13 @@ pub mod pixsol {
         Ok(())
     }
 
-    // pub fn update_pixel(ctx: Context<UpdatePixel>, x: u32, y: u32, color: [u8; 3]) -> Result<()> {
-    //     let canvas = &ctx.accounts.canvas;
-    //     if x >= canvas.width || y >= canvas.height {
-    //         return Err(ErrorCode::OutOfBounds.into());
-    //     }
-    //     let pixel = &mut ctx.accounts.pixel;
-    //     pixel.color = color;
-    //     Ok(())
-    // }
+
+    pub fn update_pixel(ctx: Context<UpdatePixel>, color: [u8; 3]) -> Result<()> {
+        let pixel = &mut ctx.accounts.pixel;
+        pixel.color = color;
+        pixel.modifier = ctx.accounts.modifier.key();
+        Ok(())
+    }
 }
 
 #[derive(Accounts)]
@@ -67,7 +65,6 @@ pub struct CreateCanvas<'info> {
 #[derive(Accounts)]
 pub struct CreatePixel<'info> {
     pub canvas: Account<'info, Canvas>,
-    
     #[account(init, payer = user, space = 8 + 4 + 4 + 3 + 32 + 32 + 32 + 8)]
     pub pixel: Account<'info, Pixel>,
     #[account(mut)]
@@ -75,6 +72,16 @@ pub struct CreatePixel<'info> {
     #[account(mut)]
     pub modifier: Signer<'info>,
     pub system_program: Program<'info, System>
+}
+
+#[derive(Accounts)]
+pub struct UpdatePixel<'info> {
+    #[account(mut)]
+    pub pixel: Account<'info, Pixel>, // Ensure the pixel is mutable
+    #[account(mut)]
+    pub modifier: Signer<'info>, // Add modifier account to update the pixel
+    #[account(mut)]
+    pub user: Signer<'info>, // User must be mutable as well
 }
 
 #[account]

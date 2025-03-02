@@ -1,6 +1,12 @@
 import { useWallet as useSolanaWallet } from '@solana/wallet-adapter-react';
 import { useState, useEffect } from 'react';
 
+// Helper function to get wallet ID from public key
+const getWalletId = (publicKey) => {
+  if (!publicKey) return null;
+  return publicKey.toString();
+};
+
 export function useWallet() {
   const { 
     publicKey, 
@@ -12,6 +18,7 @@ export function useWallet() {
   } = useSolanaWallet();
   
   const [walletAddress, setWalletAddress] = useState(null);
+  const [walletId, setWalletId] = useState(null);
   
   useEffect(() => {
     if (publicKey) {
@@ -43,6 +50,8 @@ export function useWallet() {
   const connectWallet = async () => {
     try {
       await connect();
+      const id = getWalletId(publicKey); // Use the getWalletId function with the publicKey
+      setWalletId(id);
       return {
         publicKey,
         wallet: solanaWallet
@@ -69,9 +78,14 @@ export function useWallet() {
   
   return { 
     wallet, 
+    walletAddress,
     connectWallet, 
     disconnectWallet,
     connecting,
-    connected
+    connected,
+    walletId
   };
 }
+
+// Make useWallet both a named export and a default export
+export default useWallet;

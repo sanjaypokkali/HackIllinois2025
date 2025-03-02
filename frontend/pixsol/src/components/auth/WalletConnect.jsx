@@ -1,20 +1,25 @@
 import React from 'react';
-import { useWallet } from '../hooks/useWallet';
+import { useWallet } from '@solana/wallet-adapter-react';
+import "../../styles/WalletConnect.css";
 
-function WalletConnect() {
-  const { wallet, connectWallet, disconnectWallet } = useWallet();
-  
+function WalletConnect({ onConnect }) {
+  const { connect, connected, publicKey } = useWallet();
+
+  const handleConnect = async () => {
+    try {
+      await connect(); // Trigger wallet connection
+      if (connected && publicKey) {
+        onConnect(publicKey.toString()); // Pass wallet ID (public key) to parent
+      }
+    } catch (error) {
+      console.error('Failed to connect wallet:', error);
+    }
+  };
+
   return (
-    <div className="wallet-connect">
-      {wallet ? (
-        <div>
-          <p>Connected: {wallet.publicKey.toString().slice(0, 6)}...{wallet.publicKey.toString().slice(-4)}</p>
-          <button onClick={disconnectWallet}>Disconnect</button>
-        </div>
-      ) : (
-        <button onClick={connectWallet}>Connect Wallet</button>
-      )}
-    </div>
+    <button onClick={handleConnect} className="connect-wallet-button">
+      Connect Wallet
+    </button>
   );
 }
 

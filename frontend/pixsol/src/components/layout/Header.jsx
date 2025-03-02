@@ -1,25 +1,40 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-// import WalletConnect from '../auth/WalletConnect';
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import { MdMenu, MdClose } from "react-icons/md";
+import "../../styles/Header.css";
 function Header() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
+  };
+
   return (
     <header className="app-header">
       <div className="logo">
-        <Link to="/">PixelChain</Link>
+        <Link to="/">Pixsol</Link>
       </div>
-      <nav className="main-nav">
-        <ul>
-          <li><Link to="/">Home</Link></li>
-          <li><Link to="/gallery">Gallery</Link></li>
-          <li><Link to="/profile">Profile</Link></li>
-        </ul>
-      </nav>
-      <div className="wallet-section">
-      <WalletMultiButton />
+      
+      <div className="right-section">
+        <WalletMultiButton />
+        <button className="hamburger" onClick={toggleMenu}>
+          {isOpen ? <MdClose size={24} /> : <MdMenu size={24} />}
+        </button>
+      </div>
 
-      </div>
+      {/* Mobile menu */}
+      {isOpen && (
+        <nav className="mobile-nav">
+          <ul>
+            <li><Link to="/" onClick={toggleMenu}>Home</Link></li>
+            <li><Link to="/merch-store" onClick={toggleMenu}>Merch Store</Link></li>
+            <li><Link to="/profile" onClick={toggleMenu}>Profile</Link></li>
+            <li><Link to="/rso-register" onClick={toggleMenu}>RSO Register</Link></li>
+
+          </ul>
+        </nav>
+      )}
     </header>
   );
 }

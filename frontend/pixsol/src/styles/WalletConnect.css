@@ -1,0 +1,41 @@
+/* wallet.css */
+
+/* General button styling */
+.connect-wallet-button {
+    background-color: #4caf50; /* Primary green color */
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Hover effect */
+  .connect-wallet-button:hover {
+    background-color: #45a049; /* Slightly darker green */
+    transform: translateY(-2px); /* Lift effect */
+  }
+  
+  /* Active state */
+  .connect-wallet-button:active {
+    transform: translateY(1px); /* Slight press-down effect */
+  }
+  
+  /* Disabled state */
+  .connect-wallet-button:disabled {
+    background-color: #ccc; /* Gray color for disabled state */
+    cursor: not-allowed;
+  }
+  
+  /* Responsive design (optional) */
+  @media (max-width: 768px) {
+    .connect-wallet-button {
+      font-size: 14px; /* Slightly smaller font size on smaller screens */
+      padding: 10px 20px;
+    }
+  }
+  

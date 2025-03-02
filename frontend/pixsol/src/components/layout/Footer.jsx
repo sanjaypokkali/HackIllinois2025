@@ -6,10 +6,10 @@ function Footer() {
     <footer className="app-footer">
       <div className="footer-content">
         <div className="footer-section">
-          <h3>PixelChain</h3>
+          <h3>Pixsol</h3>
           <p>Collaborative pixel art on the Solana blockchain</p>
         </div>
-        <div className="footer-section">
+        {/* <div className="footer-section">
           <h3>Links</h3>
           <ul>
             <li><Link to="/">Home</Link></li>
@@ -24,10 +24,10 @@ function Footer() {
             <li><a href="https://discord.com" target="_blank" rel="noopener noreferrer">Discord</a></li>
             <li><a href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub</a></li>
           </ul>
-        </div>
+        </div> */}
       </div>
       <div className="copyright">
-        &copy; {new Date().getFullYear()} PixelChain. All rights reserved.
+        &copy; {new Date().getFullYear()} Pixsol. All rights reserved.
       </div>
     </footer>
   );

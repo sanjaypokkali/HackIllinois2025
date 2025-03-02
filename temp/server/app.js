@@ -8,7 +8,23 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors());
+// Configure CORS options
+const corsOptions = {
+  origin: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+// Apply the CORS middleware with the specified options
+app.use(cors(corsOptions));// Configure CORS options
+const corsOptions = {
+  origin: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+// Apply the CORS middleware with the specified options
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Setup Solana connection

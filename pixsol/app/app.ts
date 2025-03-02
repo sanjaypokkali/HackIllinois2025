@@ -1,8 +1,9 @@
 import express from 'express';
-import { Connection, Keypair } from '@solana/web3.js';
+import { Connection, Keypair, LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import fs from "fs";
 import {AnchorProvider, Program, Wallet, setProvider, Idl} from '@coral-xyz/anchor';
 import idl from './pixsol.json' ;
+const { Metaplex, keypairIdentity } = require("@metaplex-foundation/js");
 
 const app = express();
 app.use(express.json());
@@ -63,7 +64,9 @@ const connection = new Connection('https://api.devnet.solana.com', 'confirmed');
 
 // Load your wallet keypair
 const loadedSecretKey = Uint8Array.from(JSON.parse(fs.readFileSync("/Users/sanjay/.config/solana/id.json", 'utf-8')));
+// const loadedSecretKey = Uint8Array.from(JSON.parse(fs.readFileSync("/Users/sanjay/Documents/UIUC/HackIllinois2025/HackIllinois2025/pixsol/app/new_key.json", 'utf-8')));
 const wallet = Keypair.fromSecretKey(loadedSecretKey);
+console.log(wallet.publicKey.toString())
 
 app.post('/create-canvas', async (req, res) => {
   try {
@@ -92,10 +95,8 @@ app.post('/create-canvas', async (req, res) => {
     console.error('Error creating canvas:', error);
     res.status(500).json({ error: 'Failed to create canvas' });
   }
-  
 });
   
-
 app.post('/set-pixel', async (req, res) => {
   console.log
   try {
@@ -146,30 +147,89 @@ app.post('/set-pixel', async (req, res) => {
   }
 });
 
-// app.post('/update-pixel', async (req, res) => {
+// app.post('/mint-nft', async (req, res) => {
+//   const metaplex = Metaplex.make(connection).use(keypairIdentity(wallet));
+//   const metadata = req.body;
+//   console.log(metadata);
 //   try {
-//     const { color, pixelAccountAddress, modifierId } = req.body; // Updated to use pixelAccountAddress
-//     const provider = new AnchorProvider(connection, new Wallet(wallet), {});
-//     setProvider(provider);
-//     const program = new Program(idl as Idl, provider);
 
-//     var signature = await program.methods.updatePixel(color).accounts({
-//       pixel: pixelAccountAddress, // Use the pixel account address from the client
-//       user: wallet.publicKey,
-//       modifier: modifierId
-//     }).rpc();
+//     const creators = metadata.creators.map(creator => ({
+//       address: new PublicKey(creator.address), // Convert to PublicKey
+//       share: creator.share,
+//     }));
 
-//     res.json({ 
-//       message: 'Pixel updated successfully',
+//     const { nft } = await metaplex.nfts().create({
+//       uri: metadata.uri,
+//       name: metadata.name,
+//       sellerFeeBasisPoints: metadata.sellerFeeBasisPoints,
+//       creators: creators,
 //     });
 
-//   } catch (error) {
-//     console.error('Error updating pixel:', error);
-//     res.status(500).json({ error: 'Failed to update pixel' });
-//   }
+//     for (const creator of metadata.creators) {
 
+//       async function delay(ms) {
+//         return new Promise(resolve => setTimeout(resolve, ms));
+//       }    
+
+//       const shareAmount = (metadata.seller_fee_basis_points / 10000) * LAMPORTS_PER_SOL * creator.share;
+//       const recipient = Keypair.fromSecretKey(new Uint8Array(wallet.secretKey)); // Replace with actual creator's secret key
+//       await connection.requestAirdrop(recipient.publicKey, shareAmount);
+//       console.log(`Distributed ${shareAmount / LAMPORTS_PER_SOL} SOL to ${recipient.publicKey.toString()}`);
+//   }
+//     console.log("NFT minted successfully!", nft.address.toString())
+//     res.json({ message: 'NFT minted successfully', nft });
+//   } catch (error) {
+//     console.error('Error minting NFT:', error);
+//     res.status(500).json({ error: 'Failed to mint NFT' });
+//   }
 // });
 
+app.post('/mint-nft', async (req, res) => {
+  const metaplex = Metaplex.make(connection).use(keypairIdentity(wallet));
+  const metadata = req.body;
+  console.log(metadata);
+  
+  try {
+    const creators = metadata.creators.map(creator => ({
+      address: new PublicKey(creator.address),
+      share: creator.share,
+    }));
+
+    const { nft } = await metaplex.nfts().create({
+      uri: metadata.uri,
+      name: metadata.name,
+      sellerFeeBasisPoints: metadata.sellerFeeBasisPoints,
+      creators: creators,
+    });
+
+    // Airdrop for each creator
+    const totalShareAmount = metadata.creators.reduce((total, creator) => {
+      return total + ((metadata.sellerFeeBasisPoints / 10000) * LAMPORTS_PER_SOL * creator.share);
+    }, 0);
+
+    // // Airdrop to the wallet
+    // const airdropSignature = await connection.requestAirdrop(wallet.publicKey, totalShareAmount);
+    // await connection.confirmTransaction(airdropSignature);
+
+    for (const creator of metadata.creators) {
+      const shareAmount = ((metadata.sellerFeeBasisPoints / 10000) * LAMPORTS_PER_SOL * creator.share);
+      const recipient = Keypair.fromSecretKey(new Uint8Array(wallet.secretKey)); // Replace with actual creator's secret key
+      console.log(`Distributed ${shareAmount / LAMPORTS_PER_SOL} SOL to ${recipient.publicKey.toString()}`);
+      await delay(1000); // Delay for 1 second between requests
+    }
+
+    console.log("NFT minted successfully!", nft.address.toString());
+    res.json({ message: 'NFT minted successfully', nft });
+  } catch (error) {
+    console.error('Error minting NFT:', error);
+    res.status(500).json({ error: 'Failed to mint NFT' });
+  }
+});
+
+// Delay function
+async function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 
 const PORT = 3001;

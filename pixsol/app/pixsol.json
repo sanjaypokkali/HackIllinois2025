@@ -1,0 +1,91 @@
+{
+  "address": "DVXpECCmeeVSVVH77G7SFFcRBaQoUgR522TrY8SxUPH9",
+  "metadata": {
+    "name": "pixsol",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "create_canvas",
+      "discriminator": [
+        79,
+        30,
+        61,
+        49,
+        204,
+        98,
+        128,
+        173
+      ],
+      "accounts": [
+        {
+          "name": "canvas",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "width",
+          "type": "u32"
+        },
+        {
+          "name": "height",
+          "type": "u32"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Canvas",
+      "discriminator": [
+        239,
+        248,
+        162,
+        140,
+        114,
+        179,
+        55,
+        66
+      ]
+    }
+  ],
+  "types": [
+    {
+      "name": "Canvas",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "width",
+            "type": "u32"
+          },
+          {
+            "name": "height",
+            "type": "u32"
+          },
+          {
+            "name": "creator",
+            "type": "pubkey"
+          }
+        ]
+      }
+    }
+  ]
+}

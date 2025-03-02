@@ -1,0 +1,239 @@
+{
+  "address": "DVXpECCmeeVSVVH77G7SFFcRBaQoUgR522TrY8SxUPH9",
+  "metadata": {
+    "name": "pixsol",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "create_canvas",
+      "discriminator": [
+        79,
+        30,
+        61,
+        49,
+        204,
+        98,
+        128,
+        173
+      ],
+      "accounts": [
+        {
+          "name": "canvas",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "width",
+          "type": "u32"
+        },
+        {
+          "name": "height",
+          "type": "u32"
+        }
+      ]
+    },
+    {
+      "name": "create_pixel",
+      "discriminator": [
+        79,
+        93,
+        54,
+        140,
+        128,
+        202,
+        193,
+        216
+      ],
+      "accounts": [
+        {
+          "name": "canvas"
+        },
+        {
+          "name": "pixel",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "modifier",
+          "writable": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "x",
+          "type": "u32"
+        },
+        {
+          "name": "y",
+          "type": "u32"
+        },
+        {
+          "name": "color",
+          "type": {
+            "array": [
+              "u8",
+              3
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "update_pixel",
+      "discriminator": [
+        206,
+        142,
+        40,
+        102,
+        170,
+        124,
+        205,
+        251
+      ],
+      "accounts": [
+        {
+          "name": "pixel",
+          "writable": true
+        },
+        {
+          "name": "modifier",
+          "writable": true
+        },
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "color",
+          "type": {
+            "array": [
+              "u8",
+              3
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Canvas",
+      "discriminator": [
+        239,
+        248,
+        162,
+        140,
+        114,
+        179,
+        55,
+        66
+      ]
+    },
+    {
+      "name": "Pixel",
+      "discriminator": [
+        54,
+        195,
+        214,
+        222,
+        39,
+        180,
+        218,
+        84
+      ]
+    }
+  ],
+  "types": [
+    {
+      "name": "Canvas",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "width",
+            "type": "u32"
+          },
+          {
+            "name": "height",
+            "type": "u32"
+          },
+          {
+            "name": "creator",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Pixel",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "x",
+            "type": "u32"
+          },
+          {
+            "name": "y",
+            "type": "u32"
+          },
+          {
+            "name": "color",
+            "type": {
+              "array": [
+                "u8",
+                3
+              ]
+            }
+          },
+          {
+            "name": "canvas",
+            "type": "pubkey"
+          },
+          {
+            "name": "modifier",
+            "type": "pubkey"
+          },
+          {
+            "name": "payer",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    }
+  ]
+}

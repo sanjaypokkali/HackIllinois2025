@@ -1,5 +1,5 @@
 import express from 'express';
-import { Connection, Keypair, LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
+import { Connection, Keypair, LAMPORTS_PER_SOL, PublicKey, Transaction, SystemProgram, sendAndConfirmTransaction } from '@solana/web3.js';
 import fs from "fs";
 import {AnchorProvider, Program, Wallet, setProvider, Idl} from '@coral-xyz/anchor';
 import idl from './pixsol.json' ;
@@ -20,6 +20,10 @@ const redisConfig = {
   legacyMode: false,
   disableOfflineQueue: false,
 };
+
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 const createRedisClient = async () => {
   const client = redis.createClient({
@@ -147,42 +151,38 @@ app.post('/set-pixel', async (req, res) => {
   }
 });
 
-// app.post('/mint-nft', async (req, res) => {
-//   const metaplex = Metaplex.make(connection).use(keypairIdentity(wallet));
-//   const metadata = req.body;
-//   console.log(metadata);
-//   try {
+app.post('/payout-creators', async (req, res) => {
+  try {
+    const { nftAddress, totalAmount } = req.body;
+    const metaplex = Metaplex.make(connection).use(keypairIdentity(wallet));
+    const nft = await metaplex.nfts().findByMint({ mintAddress: new PublicKey(nftAddress)});
 
-//     const creators = metadata.creators.map(creator => ({
-//       address: new PublicKey(creator.address), // Convert to PublicKey
-//       share: creator.share,
-//     }));
+    const creators = nft.creators; // Get creators from NFT metadata
+    console.log(`Distributing ${totalAmount} SOL among creators of NFT ${nftAddress}`);
 
-//     const { nft } = await metaplex.nfts().create({
-//       uri: metadata.uri,
-//       name: metadata.name,
-//       sellerFeeBasisPoints: metadata.sellerFeeBasisPoints,
-//       creators: creators,
-//     });
+    for (const creator of creators) {
+      const shareAmount = (totalAmount * creator.share) / 100; // Calculate share
+      const recipient = new PublicKey(creator.address);
 
-//     for (const creator of metadata.creators) {
+      const transaction = new Transaction().add(
+        SystemProgram.transfer({
+          fromPubkey: wallet.publicKey,
+          toPubkey: recipient,
+          lamports: shareAmount * LAMPORTS_PER_SOL, // Convert SOL to lamports
+        })
+      );
 
-//       async function delay(ms) {
-//         return new Promise(resolve => setTimeout(resolve, ms));
-//       }    
+      const signature = await sendAndConfirmTransaction(connection, transaction, [wallet]);
+      console.log(`Sent ${shareAmount} SOL to ${recipient.toString()}: ${signature}`);
 
-//       const shareAmount = (metadata.seller_fee_basis_points / 10000) * LAMPORTS_PER_SOL * creator.share;
-//       const recipient = Keypair.fromSecretKey(new Uint8Array(wallet.secretKey)); // Replace with actual creator's secret key
-//       await connection.requestAirdrop(recipient.publicKey, shareAmount);
-//       console.log(`Distributed ${shareAmount / LAMPORTS_PER_SOL} SOL to ${recipient.publicKey.toString()}`);
-//   }
-//     console.log("NFT minted successfully!", nft.address.toString())
-//     res.json({ message: 'NFT minted successfully', nft });
-//   } catch (error) {
-//     console.error('Error minting NFT:', error);
-//     res.status(500).json({ error: 'Failed to mint NFT' });
-//   }
-// });
+      await delay(1000); // Delay to prevent rate limits
+    }
+    res.json({ message: 'Revenue distributed successfully' });
+  } catch (error) {
+    console.error('Error creating pixel:', error);
+    res.status(500).json({ error: 'Failed to create pixel' });
+  }
+});
 
 app.post('/mint-nft', async (req, res) => {
   const metaplex = Metaplex.make(connection).use(keypairIdentity(wallet));
@@ -202,22 +202,6 @@ app.post('/mint-nft', async (req, res) => {
       creators: creators,
     });
 
-    // Airdrop for each creator
-    const totalShareAmount = metadata.creators.reduce((total, creator) => {
-      return total + ((metadata.sellerFeeBasisPoints / 10000) * LAMPORTS_PER_SOL * creator.share);
-    }, 0);
-
-    // // Airdrop to the wallet
-    // const airdropSignature = await connection.requestAirdrop(wallet.publicKey, totalShareAmount);
-    // await connection.confirmTransaction(airdropSignature);
-
-    for (const creator of metadata.creators) {
-      const shareAmount = ((metadata.sellerFeeBasisPoints / 10000) * LAMPORTS_PER_SOL * creator.share);
-      const recipient = Keypair.fromSecretKey(new Uint8Array(wallet.secretKey)); // Replace with actual creator's secret key
-      console.log(`Distributed ${shareAmount / LAMPORTS_PER_SOL} SOL to ${recipient.publicKey.toString()}`);
-      await delay(1000); // Delay for 1 second between requests
-    }
-
     console.log("NFT minted successfully!", nft.address.toString());
     res.json({ message: 'NFT minted successfully', nft });
   } catch (error) {
@@ -225,12 +209,6 @@ app.post('/mint-nft', async (req, res) => {
     res.status(500).json({ error: 'Failed to mint NFT' });
   }
 });
-
-// Delay function
-async function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 
 const PORT = 3001;
 app.listen(PORT, () => {
